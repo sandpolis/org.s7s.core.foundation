@@ -23,3 +23,6 @@ jobs:
     - name: Execute build
       run: |
         gradle --no-daemon build -x javadoc
+      env:
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ github.token }}
