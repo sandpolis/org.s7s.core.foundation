@@ -1,0 +1,24 @@
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  publish:
+    name: Publish release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Initialize Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: 15
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Publish artifacts
+      run: |
+        gradle --no-daemon publish
+      env:
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
