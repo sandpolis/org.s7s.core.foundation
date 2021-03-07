@@ -19,9 +19,9 @@ class CryptoUtilTest {
 
 	@Test
 	@DisplayName("Check PBKDF2 verification")
-	void pbkdf2_1() {
+	void testCheckPBKDF2() {
 		assertTrue(CryptoUtil.PBKDF2.check("pa55w0rd",
-				"2142:7D06806F24653DD5364C6BCFFEC86029:4cCVyYx+Re7OIE2fUcSpaV/OqpuV9/7XFae/xLEDSmZEILo6lDMV8IzaZFdcqfSR"));
+				"2142:7D06806F24653DD5364C6BCFFEC86029:ts3IyK5ws7GI69Nti24WBd5zvOmunZ7eWj/GDV25j09SkmUPl+9HmSw0OXlH5mFq"));
 		assertFalse(CryptoUtil.PBKDF2.check("pa55w0rd",
 				"2142:7D06806F24653DD5364C6BCFFEC86029:UQWvabjl1dSWq21Edl+ME7lUb/L9KSKT90K2U6iPCtUGUbNiDnj5TdnGc6irJJgE"));
 
