@@ -22,3 +22,5 @@ jobs:
       env:
         SIGNING_PGP_KEY: ${{ secrets.SIGNING_PGP_KEY }}
         SIGNING_PGP_PASSWORD: ${{ secrets.SIGNING_PGP_PASSWORD }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ github.token }}
