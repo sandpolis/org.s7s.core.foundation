@@ -20,5 +20,5 @@ jobs:
       run: |
         gradle --no-daemon publish
       env:
-        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        SIGNING_PGP_KEY: ${{ secrets.SIGNING_PGP_KEY }}
+        SIGNING_PGP_PASSWORD: ${{ secrets.SIGNING_PGP_PASSWORD }}
