@@ -7,16 +7,13 @@
 //  as published by the Mozilla Foundation.                                   //
 //                                                                            //
 //============================================================================//
-open module com.sandpolis.core.foundation {
-	exports com.sandpolis.core.foundation.idle;
-	exports com.sandpolis.core.foundation.config;
-	exports com.sandpolis.core.foundation.util;
-	exports com.sandpolis.core.foundation;
+package com.sandpolis.core.foundation.config;
 
-	requires com.google.common;
-	requires com.google.protobuf;
-	requires java.prefs;
-	requires java.xml;
-	requires org.fusesource.jansi;
-	requires org.slf4j;
+public class UnsatisfiedConfigPropertyException extends RuntimeException {
+
+	private static final long serialVersionUID = -4855006371554960374L;
+
+	public UnsatisfiedConfigPropertyException(String property) {
+		super("Missing property: " + property);
+	}
 }

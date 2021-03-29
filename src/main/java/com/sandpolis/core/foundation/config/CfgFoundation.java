@@ -7,16 +7,16 @@
 //  as published by the Mozilla Foundation.                                   //
 //                                                                            //
 //============================================================================//
-open module com.sandpolis.core.foundation {
-	exports com.sandpolis.core.foundation.idle;
-	exports com.sandpolis.core.foundation.config;
-	exports com.sandpolis.core.foundation.util;
-	exports com.sandpolis.core.foundation;
+package com.sandpolis.core.foundation.config;
 
-	requires com.google.common;
-	requires com.google.protobuf;
-	requires java.prefs;
-	requires java.xml;
-	requires org.fusesource.jansi;
-	requires org.slf4j;
+public final class CfgFoundation {
+
+	/**
+	 * Whether development features should be enabled.
+	 */
+	public static final ConfigProperty<Boolean> DEVELOPMENT_MODE = new SysEnvConfigProperty<>(Boolean.class,
+			"s7s.development_mode");
+
+	private CfgFoundation() {
+	}
 }
