@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This {@link ConfigProperty} reads values from system properties and
  * environment variables in that order.
- * 
+ *
  * Note: environment variables are expected to be uppercase and separated with
  * underscores rather than dots. Therefore the equivalent environment variable
  * for "install.path" is "INSTALL_PATH".

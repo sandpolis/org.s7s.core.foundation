@@ -7,17 +7,33 @@
 //  as published by the Mozilla Foundation.                                   //
 //                                                                            //
 //============================================================================//
-open module com.sandpolis.core.foundation {
-	exports com.sandpolis.core.foundation.config;
-	exports com.sandpolis.core.foundation.cstruct;
-	exports com.sandpolis.core.foundation.idle;
-	exports com.sandpolis.core.foundation.util;
-	exports com.sandpolis.core.foundation;
+package com.sandpolis.core.foundation.cstruct;
 
-	requires com.google.common;
-	requires com.google.protobuf;
-	requires java.prefs;
-	requires java.xml;
-	requires org.fusesource.jansi;
-	requires org.slf4j;
+import java.util.Optional;
+
+/**
+ * The result of a validation or verification attempt.
+ */
+public final class VResult {
+
+	/**
+	 * The overall result.
+	 */
+	public final boolean result;
+
+	/**
+	 * An additional message if the result is false.
+	 */
+	public final Optional<String> message;
+
+	public VResult(String message) {
+		this.result = false;
+		this.message = Optional.of(message);
+	}
+
+	public VResult(boolean result) {
+		this.result = result;
+		this.message = Optional.empty();
+	}
+
 }

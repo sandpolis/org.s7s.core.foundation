@@ -7,17 +7,19 @@
 //  as published by the Mozilla Foundation.                                   //
 //                                                                            //
 //============================================================================//
-open module com.sandpolis.core.foundation {
-	exports com.sandpolis.core.foundation.config;
-	exports com.sandpolis.core.foundation.cstruct;
-	exports com.sandpolis.core.foundation.idle;
-	exports com.sandpolis.core.foundation.util;
-	exports com.sandpolis.core.foundation;
+package com.sandpolis.core.foundation.cstruct;
 
-	requires com.google.common;
-	requires com.google.protobuf;
-	requires java.prefs;
-	requires java.xml;
-	requires org.fusesource.jansi;
-	requires org.slf4j;
+/**
+ * A {@link ConfigStruct} is a short-lived mutable object that holds a
+ * configuration.
+ *
+ * All subclasses must satisfy several conditions:
+ * <ul>
+ * <li>All fields are public</li>
+ * <li>One zero-argument constructor is allowed</li>
+ * </ul>
+ *
+ * @since 0.2.0
+ */
+public abstract class ConfigStruct {
 }
