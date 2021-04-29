@@ -1,0 +1,12 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+    timezone: America/Chicago
+  open-pull-requests-limit: 99
+  ignore:
+  - dependency-name: com.google.protobuf:protobuf-java
+    versions:
+    - 3.15.7
