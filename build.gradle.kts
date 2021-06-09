@@ -35,7 +35,7 @@ dependencies {
 	implementation("org.fusesource.jansi:jansi:2.1.1")
 
 	// https://github.com/protocolbuffers/protobuf
-	api("com.google.protobuf:protobuf-java:3.17.2")
+	api("com.google.protobuf:protobuf-java:3.17.3")
 
 	// https://github.com/qos-ch/slf4j
 	api("org.slf4j:slf4j-api:1.7.30")
