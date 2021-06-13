@@ -10,16 +10,12 @@
 package com.sandpolis.core.foundation.util;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.fusesource.jansi.Ansi.ansi;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.Ansi.Color;
 
 /**
  * Text processing utilities.
@@ -28,6 +24,41 @@ import org.fusesource.jansi.Ansi.Color;
  */
 public final class TextUtil {
 
+	public enum Color {
+		BLUE(4), //
+		CYAN(6), //
+		GREEN(2), //
+		MAGENTA(5), //
+		RED(1), //
+		YELLOW(3);
+
+		private final int value;
+
+		Color(int index) {
+			this.value = index;
+		}
+
+		public String bg() {
+			return String.format("\u001b[%dm", value + 40);
+		}
+
+		public String bgBright() {
+			return String.format("\u001b[%dm", value + 100);
+		}
+
+		public String fg() {
+			return String.format("\u001b[%dm", value + 30);
+		}
+
+		public String fgBright() {
+			return String.format("\u001b[%dm", value + 90);
+		}
+
+		public static String reset() {
+			return String.format("\u001b[%dm", 0);
+		}
+	}
+
 	/**
 	 * The default units (in descending order) in which to format durations.
 	 */
@@ -35,9 +66,82 @@ public final class TextUtil {
 			ChronoUnit.MINUTES, ChronoUnit.SECONDS };
 
 	/**
-	 * Colors available to {@link #rainbowText(String)}.
+	 * @return Whether the terminal is attached to a console and supports ANSI color
+	 *         escape codes.
 	 */
-	private static final Color[] RAINBOW = Arrays.copyOfRange(Color.values(), 1, 7);
+	public static boolean checkAnsiColors() {
+		return true; // TODO
+	}
+
+	/**
+	 * Colorize a string with ANSI escape codes.
+	 * 
+	 * @param color The text color
+	 * @param text  The text to colorize
+	 * @return The colorized text
+	 */
+	public static String colorText(Color color, String text) {
+		checkNotNull(color);
+		checkNotNull(text);
+
+		if (!checkAnsiColors()) {
+			return text;
+		}
+
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(color.fg());
+		buffer.append(text);
+		buffer.append(Color.reset());
+
+		return buffer.toString();
+	}
+
+	/**
+	 * Randomly colorize a string with ANSI escape codes. No two consecutive
+	 * characters will be the same color.
+	 *
+	 * @param text The text to colorize
+	 * @return The colorized text
+	 */
+	public static String colorTextRainbow(String text) {
+		checkNotNull(text);
+
+		if (!checkAnsiColors()) {
+			return text;
+		}
+
+		Color[] colors = Color.values();
+
+		StringBuilder buffer = new StringBuilder();
+
+		Color last = null;
+		for (int i = 0; i < text.length(); i++) {
+			Color rand = RandUtil.nextItem(colors);
+			if (rand == last) {
+				i--;
+				continue;
+			}
+
+			last = rand;
+			buffer.append(rand.fg());
+			buffer.append(text.charAt(i));
+		}
+		buffer.append(Color.reset());
+
+		return buffer.toString();
+	}
+
+	/**
+	 * Compare two semantic versions.
+	 *
+	 * @param version1 First version
+	 * @param version2 Second version
+	 * @return
+	 */
+	public static int compareVersion(String version1, String version2) {
+		return Arrays.compare(Arrays.stream(version1.split("\\.|\\+")).mapToInt(Integer::parseInt).toArray(),
+				Arrays.stream(version2.split("\\.")).mapToInt(Integer::parseInt).toArray());
+	}
 
 	/**
 	 * Format the given byte count with base 2 unit prefixes.
@@ -162,45 +266,6 @@ public final class TextUtil {
 			return matcher.group(1);
 		}
 		return null;
-	}
-
-	/**
-	 * Compare two semantic versions.
-	 *
-	 * @param version1 First version
-	 * @param version2 Second version
-	 * @return
-	 */
-	public static int compareVersion(String version1, String version2) {
-		return Arrays.compare(Arrays.stream(version1.split("\\.|\\+")).mapToInt(Integer::parseInt).toArray(),
-				Arrays.stream(version2.split("\\.")).mapToInt(Integer::parseInt).toArray());
-	}
-
-	/**
-	 * Randomly colorize a String with ANSI escape codes. No two consecutive
-	 * characters will be the same color.
-	 *
-	 * @param text The text to colorize
-	 * @return The colorized text
-	 */
-	public static String rainbowText(String text) {
-		checkNotNull(text);
-
-		Ansi ansi = ansi(text.length()).bold();
-
-		Color last = null;
-		for (int i = 0; i < text.length(); i++) {
-			Color rand = RandUtil.nextItem(RAINBOW);
-			if (rand == last) {
-				i--;
-				continue;
-			}
-
-			last = rand;
-			ansi.fg(rand).a(text.charAt(i));
-		}
-
-		return ansi.reset().toString();
 	}
 
 	/**
