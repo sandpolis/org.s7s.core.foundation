@@ -17,13 +17,13 @@ plugins {
 }
 
 dependencies {
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.1")
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.1")
-	testImplementation("org.junit.jupiter:junit-jupiter-params:5.6.1")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
+	testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.2")
 	testImplementation("net.jodah:concurrentunit:0.4.6")
 
 	// https://github.com/google/guava
-	api ("com.google.guava:guava:30.1-jre") {
+	api ("com.google.guava:guava:30.1.1-jre") {
 		exclude(group = "com.google.code.findbugs", module = "jsr305")
 		exclude(group = "com.google.guava", module = "listenablefuture")
 		exclude(group = "org.checkerframework", module = "checker-qual")
@@ -31,15 +31,9 @@ dependencies {
 		exclude(group = "com.google.j2objc", module = "j2objc-annotations")
 	}
 
-	// https://github.com/fusesource/jansi
-	implementation("org.fusesource.jansi:jansi:2.1.1")
-
 	// https://github.com/protocolbuffers/protobuf
-	api("com.google.protobuf:protobuf-java:3.17.2")
+	api("com.google.protobuf:protobuf-java:3.17.3")
 
 	// https://github.com/qos-ch/slf4j
 	api("org.slf4j:slf4j-api:1.7.30")
-
-	// https://github.com/amaembo/streamex
-	api("one.util:streamex:0.7.3")
 }
