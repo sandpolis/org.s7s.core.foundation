@@ -35,5 +35,5 @@ dependencies {
 	api("com.google.protobuf:protobuf-java:3.17.3")
 
 	// https://github.com/qos-ch/slf4j
-	api("org.slf4j:slf4j-api:1.7.30")
+	api("org.slf4j:slf4j-api:1.7.31")
 }
