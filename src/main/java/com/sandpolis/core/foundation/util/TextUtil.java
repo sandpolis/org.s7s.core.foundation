@@ -75,7 +75,7 @@ public final class TextUtil {
 
 	/**
 	 * Colorize a string with ANSI escape codes.
-	 * 
+	 *
 	 * @param color The text color
 	 * @param text  The text to colorize
 	 * @return The colorized text

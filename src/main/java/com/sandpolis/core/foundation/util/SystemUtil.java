@@ -10,9 +10,9 @@
 package com.sandpolis.core.foundation.util;
 
 import static com.sandpolis.core.foundation.Platform.OsType.AIX;
-import static com.sandpolis.core.foundation.Platform.OsType.LINUX;
-import static com.sandpolis.core.foundation.Platform.OsType.DARWIN;
 import static com.sandpolis.core.foundation.Platform.OsType.BSD;
+import static com.sandpolis.core.foundation.Platform.OsType.DARWIN;
+import static com.sandpolis.core.foundation.Platform.OsType.LINUX;
 import static com.sandpolis.core.foundation.Platform.OsType.SOLARIS;
 import static com.sandpolis.core.foundation.Platform.OsType.UNRECOGNIZED;
 import static com.sandpolis.core.foundation.Platform.OsType.WINDOWS;
@@ -86,7 +86,7 @@ public final class SystemUtil {
 			return this;
 		}
 
-		public int exitValue() throws Exception {
+		public int exitValue() throws InterruptedException {
 			return process.waitFor();
 		}
 
