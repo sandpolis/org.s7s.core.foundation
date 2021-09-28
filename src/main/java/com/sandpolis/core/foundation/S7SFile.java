@@ -7,69 +7,36 @@
 //  as published by the Mozilla Foundation.                                   //
 //                                                                            //
 //============================================================================//
-package com.sandpolis.core.foundation.util;
+package com.sandpolis.core.foundation;
 
 import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.WRITE;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.lang.module.ModuleFinder;
-import java.nio.BufferOverflowException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 import java.util.Optional;
 
-/**
- * Utilities for manipulating files.
- *
- * @since 3.0.0
- */
-public final class FileUtil {
+public record S7SFile(Path path) {
 
-	/**
-	 * Copies the source file or directory to the destination file or directory.
-	 * This method should only be used for small copy jobs.
-	 *
-	 * @param source The source file or directory
-	 * @param dest   The destination file or directory
-	 * @throws IOException
-	 */
-	public static void copy(File source, File dest) throws IOException {
-		Objects.requireNonNull(source);
-		Objects.requireNonNull(dest);
-		if (!source.exists())
-			throw new FileNotFoundException();
-
-		copyRecursive(source, dest);
+	public static S7SFile of(Path path) {
+		return new S7SFile(path);
 	}
 
-	private static void copyRecursive(File source, File dest) throws IOException {
-		if (source.isFile()) {
-			if (dest.isFile())
-				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
-			else
-				Files.copy(source.toPath(), Paths.get(dest.getAbsolutePath(), source.getName()),
-						StandardCopyOption.COPY_ATTRIBUTES);
-		} else {
-			if (!dest.exists())
-				dest.mkdir();
-			else if (!dest.isDirectory()) {
-				throw new IllegalArgumentException("Cannot copy a directory to a file");
-			}
-
-			for (String child : source.list()) {
-				copyRecursive(new File(source, child), new File(dest, child));
-			}
-		}
+	public static S7SFile of(File file) {
+		return new S7SFile(file.toPath());
 	}
 
 	/**
@@ -79,10 +46,33 @@ public final class FileUtil {
 	 * @param module    The module name
 	 * @return The file containing the desired module
 	 */
-	public static Optional<Path> findModule(Path directory, String module) {
-		return ModuleFinder.of(directory).find(module).flatMap(ref -> {
+	public Optional<Path> findModule(String module) {
+		if (!Files.isDirectory(path))
+			throw new IllegalArgumentException();
+
+		return ModuleFinder.of(path).find(module).flatMap(ref -> {
 			return ref.location().map(Paths::get);
 		});
+	}
+
+	/**
+	 * Download a file from the Internet to a local file.
+	 *
+	 * @param url  The resource location
+	 * @param file The output file
+	 * @throws IOException
+	 */
+	public void download(URL url) throws IOException {
+		if (url == null)
+			throw new IllegalArgumentException();
+
+		URLConnection con = url.openConnection();
+
+		try (DataInputStream in = new DataInputStream(con.getInputStream())) {
+			try (OutputStream out = Files.newOutputStream(path)) {
+				in.transferTo(out);
+			}
+		}
 	}
 
 	/**
@@ -90,17 +80,16 @@ public final class FileUtil {
 	 * bytes will be written to the file's original physical location, so this
 	 * method should not be used for secure applications.
 	 *
-	 * @param file The file to overwrite
 	 * @throws IOException
 	 */
-	public static void overwrite(File file) throws IOException {
-		Objects.requireNonNull(file);
-		if (!file.exists())
+	public void overwrite() throws IOException {
+
+		if (!Files.exists(path))
 			throw new FileNotFoundException();
 
 		byte[] zeros = new byte[4096];
 
-		try (RandomAccessFile raf = new RandomAccessFile(file, "w")) {
+		try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "w")) {
 			for (long i = 0; i < raf.length(); i += zeros.length)
 				raf.write(zeros);
 			for (long i = 0; i < raf.length() % zeros.length; i++)
@@ -113,18 +102,20 @@ public final class FileUtil {
 	 * given replacement. This method uses a standard needle/haystack linear search
 	 * algorithm with backtracking.
 	 *
-	 * @param binary      The binary file to process
 	 * @param placeholder The unique placeholder
 	 * @param replacement The payload buffer
 	 * @throws IOException
 	 */
-	public static void replace(Path binary, short[] placeholder, byte[] replacement) throws IOException {
+	public void replace(short[] placeholder, byte[] replacement) throws IOException {
+
+		if (!Files.exists(path))
+			throw new FileNotFoundException();
 
 		// Check the replacement buffer size
 		if (replacement.length > placeholder.length)
-			throw new BufferOverflowException();
+			throw new IllegalArgumentException();
 
-		try (var ch = FileChannel.open(binary, READ, WRITE)) {
+		try (var ch = FileChannel.open(path, READ, WRITE)) {
 			var buffer = ch.map(MapMode.READ_WRITE, ch.position(), ch.size()).order(ByteOrder.nativeOrder());
 
 			buffer.mark();
@@ -148,8 +139,5 @@ public final class FileUtil {
 			// Placeholder not found
 			throw new IOException("Failed to find placeholder");
 		}
-	}
-
-	private FileUtil() {
 	}
 }

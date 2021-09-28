@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import com.sandpolis.core.foundation.S7SRandom;
+
 /**
  * Text processing utilities.
  *
@@ -116,7 +118,7 @@ public final class TextUtil {
 
 		Color last = null;
 		for (int i = 0; i < text.length(); i++) {
-			Color rand = RandUtil.nextItem(colors);
+			Color rand = S7SRandom.nextItem(colors);
 			if (rand == last) {
 				i--;
 				continue;

@@ -7,7 +7,7 @@
 //  as published by the Mozilla Foundation.                                   //
 //                                                                            //
 //============================================================================//
-package com.sandpolis.core.foundation.util;
+package com.sandpolis.core.foundation;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,16 +15,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class CryptoUtilTest {
+class S7SPasswordTest {
 
 	@Test
 	@DisplayName("Check PBKDF2 verification")
-	void testCheckPBKDF2() {
-		assertTrue(CryptoUtil.PBKDF2.check("pa55w0rd",
+	void checkPBKDF2() {
+		assertTrue(S7SPassword.of("pa55w0rd").checkPBKDF2(
 				"2142:7D06806F24653DD5364C6BCFFEC86029:ts3IyK5ws7GI69Nti24WBd5zvOmunZ7eWj/GDV25j09SkmUPl+9HmSw0OXlH5mFq"));
-		assertFalse(CryptoUtil.PBKDF2.check("pa55w0rd",
+		assertFalse(S7SPassword.of("pa55w0rd").checkPBKDF2(
 				"2142:7D06806F24653DD5364C6BCFFEC86029:UQWvabjl1dSWq21Edl+ME7lUb/L9KSKT90K2U6iPCtUGUbNiDnj5TdnGc6irJJgE"));
 
-		assertTrue(CryptoUtil.PBKDF2.check("goodpass", CryptoUtil.PBKDF2.hash("goodpass")));
+		assertTrue(S7SPassword.of("pa55w0rd").checkPBKDF2(S7SPassword.of("pa55w0rd").hashPBKDF2()));
 	}
 }

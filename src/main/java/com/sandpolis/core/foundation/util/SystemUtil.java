@@ -9,7 +9,6 @@
 //============================================================================//
 package com.sandpolis.core.foundation.util;
 
-import static com.sandpolis.core.foundation.Platform.OsType.FREEBSD;
 import static com.sandpolis.core.foundation.Platform.ArchType.AARCH64;
 import static com.sandpolis.core.foundation.Platform.ArchType.ARM;
 import static com.sandpolis.core.foundation.Platform.ArchType.MIPS;
@@ -22,27 +21,21 @@ import static com.sandpolis.core.foundation.Platform.ArchType.UNKNOWN_ARCH;
 import static com.sandpolis.core.foundation.Platform.ArchType.X86;
 import static com.sandpolis.core.foundation.Platform.ArchType.X86_64;
 import static com.sandpolis.core.foundation.Platform.OsType.DRAGONFLYBSD;
+import static com.sandpolis.core.foundation.Platform.OsType.FREEBSD;
+import static com.sandpolis.core.foundation.Platform.OsType.LINUX;
+import static com.sandpolis.core.foundation.Platform.OsType.MACOS;
 import static com.sandpolis.core.foundation.Platform.OsType.NETBSD;
 import static com.sandpolis.core.foundation.Platform.OsType.OPENBSD;
 import static com.sandpolis.core.foundation.Platform.OsType.SOLARIS;
-import static com.sandpolis.core.foundation.Platform.OsType.LINUX;
-import static com.sandpolis.core.foundation.Platform.OsType.MACOS;
 import static com.sandpolis.core.foundation.Platform.OsType.UNKNOWN_OS;
 import static com.sandpolis.core.foundation.Platform.OsType.WINDOWS;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.CharStreams;
 import com.sandpolis.core.foundation.Platform.ArchType;
 import com.sandpolis.core.foundation.Platform.OsType;
+import com.sandpolis.core.foundation.S7SProcess;
 
 public final class SystemUtil {
 
@@ -91,7 +84,7 @@ public final class SystemUtil {
 	private static ArchType queryArchType() {
 
 		// Try uname first because many systems have it
-		String uname = exec("uname", "-m").string().toLowerCase();
+		String uname = S7SProcess.exec("uname", "-m").string().orElse("").toLowerCase();
 
 		if (!uname.isBlank()) {
 			if (uname.contains("x86_64") || uname.contains("ia64"))
@@ -127,7 +120,8 @@ public final class SystemUtil {
 
 		// Also try WMI on windows
 		if (OS_TYPE == WINDOWS) {
-			String wmic = exec("wmic", "computersystem", "get", "systemtype").string().toLowerCase();
+			String wmic = S7SProcess.exec("wmic", "computersystem", "get", "systemtype").string().orElse("")
+					.toLowerCase();
 
 			if (wmic.contains("x64"))
 				return X86_64;
@@ -137,62 +131,6 @@ public final class SystemUtil {
 		}
 
 		return UNKNOWN_ARCH;
-	}
-
-	public static final class ProcessWrapper {
-
-		private Process process;
-		private Exception error;
-
-		private ProcessWrapper(Process process) {
-			this.process = Objects.requireNonNull(process);
-		}
-
-		private ProcessWrapper(Exception e) {
-			this.error = Objects.requireNonNull(e);
-		}
-
-		public ProcessWrapper complete(long timeout) throws Exception {
-			if (error != null)
-				throw error;
-
-			process.waitFor(timeout, TimeUnit.SECONDS);
-			return this;
-		}
-
-		public int exitValue() throws InterruptedException {
-			return process.waitFor();
-		}
-
-		public Stream<String> lines() {
-			return new BufferedReader(new InputStreamReader(process.getInputStream())).lines();
-		}
-
-		public String string() {
-			try {
-				return CharStreams.toString(new InputStreamReader(process.getInputStream()));
-			} catch (IOException e) {
-				error = e;
-				return "";
-			}
-		}
-
-	}
-
-	public static ProcessWrapper exec(String... cmd) {
-		log.trace("Executing system command: \"{}\"", String.join(" ", cmd));
-
-		try {
-			return new ProcessWrapper(Runtime.getRuntime().exec(cmd));
-		} catch (IOException e) {
-			// A failed ProcessWrapper
-			return new ProcessWrapper(e);
-		}
-	}
-
-	public static ProcessWrapper execp(String... cmd) {
-		// TODO use OS type
-		return exec(cmd);
 	}
 
 	private SystemUtil() {
