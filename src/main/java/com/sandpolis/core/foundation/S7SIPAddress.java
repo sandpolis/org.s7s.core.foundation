@@ -73,4 +73,23 @@ public record S7SIPAddress(byte[] asBytes, String asString, int asInt) {
 		return S7SIPAddress.of((asInt | ~(0x80000000 >> networkPrefix - 1)) - 1);
 	}
 
+	public boolean isIPv4() {
+		return asBytes.length == 4;
+	}
+
+	public boolean isIPv6() {
+		return asBytes.length == 16;
+	}
+
+	public boolean isPrivateIPv4() {
+		if (isIPv4()) {
+			throw new UnsupportedOperationException();
+		}
+
+		return asBytes[0] == 127 //
+				|| asBytes[0] == 10//
+				|| (asBytes[0] == 172 && asBytes[1] >= 16 && asBytes[1] <= 31) //
+				|| (asBytes[0] == 192 && asBytes[1] == 168);
+	}
+
 }

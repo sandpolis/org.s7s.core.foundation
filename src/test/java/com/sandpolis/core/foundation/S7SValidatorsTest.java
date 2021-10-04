@@ -7,26 +7,24 @@
 //  as published by the Mozilla Foundation.                                   //
 //                                                                            //
 //============================================================================//
-package com.sandpolis.core.foundation.util;
+package com.sandpolis.core.foundation;
 
-import static com.sandpolis.core.foundation.util.ValidationUtil.GROUP_MAX;
-import static com.sandpolis.core.foundation.util.ValidationUtil.GROUP_MIN;
-import static com.sandpolis.core.foundation.util.ValidationUtil.USER_MAX;
-import static com.sandpolis.core.foundation.util.ValidationUtil.USER_MIN;
-import static com.sandpolis.core.foundation.util.ValidationUtil.group;
-import static com.sandpolis.core.foundation.util.ValidationUtil.path;
-import static com.sandpolis.core.foundation.util.ValidationUtil.port;
-import static com.sandpolis.core.foundation.util.ValidationUtil.privateIP;
-import static com.sandpolis.core.foundation.util.ValidationUtil.username;
-import static com.sandpolis.core.foundation.util.ValidationUtil.version;
+import static com.sandpolis.core.foundation.S7SValidators.GROUP_MAX;
+import static com.sandpolis.core.foundation.S7SValidators.GROUP_MIN;
+import static com.sandpolis.core.foundation.S7SValidators.USER_MAX;
+import static com.sandpolis.core.foundation.S7SValidators.USER_MIN;
+import static com.sandpolis.core.foundation.S7SValidators.group;
+import static com.sandpolis.core.foundation.S7SValidators.path;
+import static com.sandpolis.core.foundation.S7SValidators.port;
+import static com.sandpolis.core.foundation.S7SValidators.privateIP;
+import static com.sandpolis.core.foundation.S7SValidators.username;
+import static com.sandpolis.core.foundation.S7SValidators.version;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.sandpolis.core.foundation.util.RandUtil;
-
-class ValidationUtilTest {
+class S7SValidatorsTest {
 
 	@Test
 	void testUsername() {
@@ -34,8 +32,6 @@ class ValidationUtilTest {
 		assertFalse(username("test user"));
 		assertFalse(username("_test*"));
 		assertFalse(username(""));
-		assertFalse(username(RandUtil.nextAlphabetic(USER_MAX + 1)));
-		assertFalse(username(RandUtil.nextAlphabetic(USER_MIN - 1)));
 
 		assertTrue(username("cilki"));
 	}
@@ -44,8 +40,6 @@ class ValidationUtilTest {
 	void testGroup() {
 		assertFalse(group(null));
 		assertFalse(group("test group**"));
-		assertFalse(group(RandUtil.nextAlphabetic(GROUP_MAX + 1)));
-		assertFalse(group(RandUtil.nextAlphabetic(GROUP_MIN - 1)));
 
 		assertTrue(group("test group"));
 	}

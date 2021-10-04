@@ -52,4 +52,12 @@ public record S7SProcess(Process process) {
 		}
 	}
 
+	public int exitValue() {
+		try {
+			return process.waitFor();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

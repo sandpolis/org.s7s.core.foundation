@@ -22,12 +22,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.sandpolis.core.foundation.util.ValidationUtil;
-
 public record S7STCPService(int port) {
 
 	public static S7STCPService of(int port) {
-		if (!ValidationUtil.port(port))
+		if (!S7SValidators.port(port))
 			throw new IllegalArgumentException("Invalid port: " + port);
 
 		return new S7STCPService(port);

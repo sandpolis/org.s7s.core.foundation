@@ -7,7 +7,7 @@
 //  as published by the Mozilla Foundation.                                   //
 //                                                                            //
 //============================================================================//
-package com.sandpolis.core.foundation.util;
+package com.sandpolis.core.foundation;
 
 import java.io.File;
 
@@ -22,8 +22,8 @@ import org.apache.commons.validator.routines.RegexValidator;
  * @author cilki
  * @since 4.0.0
  */
-public final class ValidationUtil {
-	private ValidationUtil() {
+public final class S7SValidators {
+	private S7SValidators() {
 	}
 
 	/**

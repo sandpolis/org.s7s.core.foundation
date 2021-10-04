@@ -81,26 +81,26 @@ public record S7SCertificate(X509Certificate certificate) {
 	 * @return The root certificate
 	 * @throws IOException
 	 */
-	public static S7SCertificate getPluginRoot() throws IOException {
+	public static S7SCertificate getPluginRoot() {
 		try (InputStream in = S7SCertificate.class.getResourceAsStream("/cert/plugin.cert")) {
 			return of(in);
-		} catch (CertificateException e) {
+		} catch (CertificateException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static S7SCertificate getDefaultCert() throws IOException {
+	public static S7SCertificate getDefaultCert() {
 		try (InputStream in = S7SCertificate.class.getResourceAsStream("/cert/default.cert")) {
 			return of(in);
-		} catch (CertificateException e) {
+		} catch (CertificateException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static PrivateKey getDefaultKey() throws InvalidKeySpecException, IOException {
+	public static PrivateKey getDefaultKey() {
 		try (InputStream in = S7SCertificate.class.getResourceAsStream("/cert/default.key")) {
 			return KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(in.readAllBytes()));
-		} catch (NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
 			throw new RuntimeException(e);
 		}
 	}
