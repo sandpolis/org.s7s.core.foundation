@@ -12,7 +12,6 @@ package com.sandpolis.core.foundation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -42,8 +41,6 @@ class S7STCPServiceTest {
 	@Test
 	@DisplayName("Check well-known service names")
 	void getServiceName() {
-		assumeTrue(System.getProperty("os.name").toLowerCase().contains("linux"));
-
 		assertEquals("ssh", S7STCPService.of(22).serviceName().get());
 		assertEquals("sandpolis", S7STCPService.of(8768).serviceName().get());
 	}

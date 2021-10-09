@@ -9,11 +9,14 @@
 //============================================================================//
 package com.sandpolis.core.foundation;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -124,6 +127,38 @@ public record S7STCPService(int port) {
 					}
 				}
 				return null;
+			}
+		}
+
+		// Super slow fallback
+		try (var in = new BufferedReader(new InputStreamReader(
+				new URL("https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.csv")
+						.openStream()))) {
+
+			// Skip header
+			in.readLine();
+
+			String line;
+			int i, j;
+			while ((line = in.readLine()) != null) {
+				if ((i = line.indexOf(',')) == -1) {
+					continue;
+				}
+				if ((j = line.indexOf(',', i + 1)) == -1) {
+					continue;
+				}
+
+				try {
+					int p = Integer.parseInt(line.substring(i + 1, j));
+
+					if (p > port) {
+						break;
+					} else if (p == port) {
+						return line.substring(0, i);
+					}
+				} catch (NumberFormatException e) {
+					continue;
+				}
 			}
 		}
 
