@@ -11,9 +11,21 @@ package com.sandpolis.core.foundation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+import java.util.regex.Pattern;
+
 public record S7SString(String text) {
 
-	public enum AnsiColor {
+	private static class LazyEmailRegex {
+		private static final Pattern VALIDATOR = Pattern.compile(
+				"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])");
+	}
+
+	private static class LazyDnsRegex {
+		private static final Pattern VALIDATOR = Pattern.compile("^(?![0-9]+$)(?!-)[a-zA-Z0-9-]{,63}(?<!-)$");
+	}
+
+	public static enum AnsiColor {
 		BLUE(4), //
 		CYAN(6), //
 		GREEN(2), //
@@ -49,6 +61,7 @@ public record S7SString(String text) {
 	}
 
 	public static S7SString of(String text) {
+		checkNotNull(text);
 		return new S7SString(text);
 	}
 
@@ -121,5 +134,69 @@ public record S7SString(String text) {
 	 */
 	public static String getSandpolisArt() {
 		return "                     _             _ _     \n ___  __ _ _ __   __| |_ __   ___ | (_)___ \n/ __|/ _` | '_ \\ / _` | '_ \\ / _ \\| | / __|\n\\__ \\ (_| | | | | (_| | |_) | (_) | | \\__ \\\n|___/\\__,_|_| |_|\\__,_| .__/ \\___/|_|_|___/\n                      |_|                  ";
+	}
+
+	/**
+	 * @return Whether the text is a valid IPv4 in the private address space
+	 */
+	public boolean isPrivateIPv4() {
+		try {
+			return S7SIPAddress.of(text).isPrivateIPv4();
+		} catch (Exception e) {
+			e.printStackTrace();
+			// Slow path
+			return false;
+		}
+	}
+
+	/**
+	 * @return Whether the text is a valid DNS name
+	 */
+	public boolean isDns() {
+		return LazyDnsRegex.VALIDATOR.matcher(text).matches();
+	}
+
+	/**
+	 * @return Whether the text is a valid 2-byte port number
+	 */
+	public boolean isPort() {
+		try {
+			int port = Integer.parseInt(text);
+			return (port >= 0 && port < 65536);
+		} catch (Exception t) {
+			// Slow path
+			return false;
+		}
+	}
+
+	/**
+	 * @return Whether the text is a valid filesystem path
+	 */
+	public boolean isPath() {
+		try {
+			new File(text).getCanonicalPath();
+			return true;
+		} catch (Throwable e) {
+			return false;
+		}
+	}
+
+	/**
+	 * @return Whether the text is a valid email address
+	 */
+	public boolean isEmail() {
+		return LazyEmailRegex.VALIDATOR.matcher(text).matches();
+	}
+
+	/**
+	 * @return Whether the text is a valid IPv4 address
+	 */
+	public boolean isIPv4() {
+		try {
+			return S7SIPAddress.of(text).isIPv4();
+		} catch (Exception e) {
+			// Slow path
+			return false;
+		}
 	}
 }

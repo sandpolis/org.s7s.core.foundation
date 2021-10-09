@@ -10,6 +10,7 @@
 package com.sandpolis.core.foundation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
@@ -36,4 +37,18 @@ class S7SVersionTest {
 		assertTrue(S7SVersion.of("1.0.0").compareTo(S7SVersion.of("1.0.1")) < 0);
 		assertTrue(S7SVersion.of("1.0.1").compareTo(S7SVersion.of("1.0.0")) > 0);
 	}
+
+	@Test
+	void testInvalidVersions() {
+		assertFalse(S7SVersion.of("5..0").isS7SModuleVersion());
+		assertFalse(S7SVersion.of("5..0.0").isS7SModuleVersion());
+		assertFalse(S7SVersion.of("5.0.0.0").isS7SModuleVersion());
+	}
+
+	@Test
+	void testValidVersions() {
+		assertTrue(S7SVersion.of("5.0.0").isS7SModuleVersion());
+		assertTrue(S7SVersion.of("05.00.00").isS7SModuleVersion());
+	}
+
 }

@@ -8,9 +8,6 @@
 //                                                                            //
 //============================================================================//
 open module com.sandpolis.core.foundation {
-	exports com.sandpolis.core.foundation.config;
-	exports com.sandpolis.core.foundation.cstruct;
-	exports com.sandpolis.core.foundation.util;
 	exports com.sandpolis.core.foundation;
 
 	requires com.google.common;

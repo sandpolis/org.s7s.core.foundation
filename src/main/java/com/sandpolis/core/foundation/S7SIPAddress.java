@@ -82,14 +82,14 @@ public record S7SIPAddress(byte[] asBytes, String asString, int asInt) {
 	}
 
 	public boolean isPrivateIPv4() {
-		if (isIPv4()) {
-			throw new UnsupportedOperationException();
+		if (!isIPv4()) {
+			throw new UnsupportedOperationException("Only supported on IPv4 addresses");
 		}
 
-		return asBytes[0] == 127 //
-				|| asBytes[0] == 10//
-				|| (asBytes[0] == 172 && asBytes[1] >= 16 && asBytes[1] <= 31) //
-				|| (asBytes[0] == 192 && asBytes[1] == 168);
+		return asBytes[0] == (byte) 127 //
+				|| asBytes[0] == (byte) 10//
+				|| (asBytes[0] == (byte) 172 && asBytes[1] >= (byte) 16 && asBytes[1] <= (byte) 31) //
+				|| (asBytes[0] == (byte) 192 && asBytes[1] == (byte) 168);
 	}
 
 }

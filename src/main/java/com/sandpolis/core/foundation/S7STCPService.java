@@ -25,7 +25,7 @@ import java.util.Optional;
 public record S7STCPService(int port) {
 
 	public static S7STCPService of(int port) {
-		if (!S7SValidators.port(port))
+		if (port < 0 || port >= 65536)
 			throw new IllegalArgumentException("Invalid port: " + port);
 
 		return new S7STCPService(port);

@@ -16,6 +16,10 @@ import java.util.regex.Pattern;
 
 public record S7SVersion(String version) implements Comparable<S7SVersion> {
 
+	private static class LazyVersionRegex {
+		private static final Pattern VALIDATOR = Pattern.compile("^(\\d)+\\.(\\d)+\\.(\\d)+(-(\\d)+)?$");
+	}
+
 	@Override
 	public int compareTo(S7SVersion o) {
 		return Arrays.compare(Arrays.stream(version.split("\\.|\\+")).mapToInt(Integer::parseInt).toArray(),
@@ -26,8 +30,8 @@ public record S7SVersion(String version) implements Comparable<S7SVersion> {
 		return new S7SVersion(version);
 	}
 
-	public boolean isModuleVersion() {
-		return true;
+	public boolean isS7SModuleVersion() {
+		return LazyVersionRegex.VALIDATOR.matcher(version).matches();
 	}
 
 	/**
