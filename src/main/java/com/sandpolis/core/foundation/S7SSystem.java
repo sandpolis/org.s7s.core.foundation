@@ -38,48 +38,15 @@ import com.sandpolis.core.foundation.Platform.OsType;
 
 public final class S7SSystem {
 
+	public static final ArchType ARCH_TYPE = queryArchType();
+
 	private static final Logger log = LoggerFactory.getLogger(S7SSystem.class);
 
 	public static final OsType OS_TYPE = queryOsType();
 
-	public static final ArchType ARCH_TYPE = queryArchType();
-
 	static {
 		log.trace("Determined OS type: {}", OS_TYPE);
 		log.trace("Determined architecture type: {}", ARCH_TYPE);
-	}
-
-	/**
-	 * @return The system's {@link OsType}
-	 */
-	private static OsType queryOsType() {
-		String name = System.getProperty("os.name").toLowerCase();
-
-		if (name.contains("windows"))
-			return WINDOWS;
-
-		if (name.contains("linux"))
-			return LINUX;
-
-		if (name.contains("mac") || name.contains("darwin"))
-			return MACOS;
-
-		if (name.contains("solaris") || name.contains("sunos"))
-			return SOLARIS;
-
-		if (name.contains("freebsd"))
-			return FREEBSD;
-
-		if (name.contains("openbsd"))
-			return OPENBSD;
-
-		if (name.contains("netbsd"))
-			return NETBSD;
-
-		if (name.contains("dragonfly"))
-			return DRAGONFLYBSD;
-
-		return UNKNOWN_OS;
 	}
 
 	/**
@@ -135,6 +102,39 @@ public final class S7SSystem {
 		}
 
 		return UNKNOWN_ARCH;
+	}
+
+	/**
+	 * @return The system's {@link OsType}
+	 */
+	private static OsType queryOsType() {
+		String name = System.getProperty("os.name").toLowerCase();
+
+		if (name.contains("windows"))
+			return WINDOWS;
+
+		if (name.contains("linux"))
+			return LINUX;
+
+		if (name.contains("mac") || name.contains("darwin"))
+			return MACOS;
+
+		if (name.contains("solaris") || name.contains("sunos"))
+			return SOLARIS;
+
+		if (name.contains("freebsd"))
+			return FREEBSD;
+
+		if (name.contains("openbsd"))
+			return OPENBSD;
+
+		if (name.contains("netbsd"))
+			return NETBSD;
+
+		if (name.contains("dragonfly"))
+			return DRAGONFLYBSD;
+
+		return UNKNOWN_OS;
 	}
 
 	private S7SSystem() {

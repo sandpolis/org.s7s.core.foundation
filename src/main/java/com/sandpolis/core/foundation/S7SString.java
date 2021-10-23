@@ -60,9 +60,9 @@ public record S7SString(String text) {
 		}
 	}
 
-	public static S7SString of(String text) {
+	public static S7SString of(Object text) {
 		checkNotNull(text);
-		return new S7SString(text);
+		return new S7SString(text.toString());
 	}
 
 	/**

@@ -18,28 +18,6 @@ public final class S7SRandom {
 
 	public static final RandomGenerator secure = new SecureRandom();
 
-	public static int nextNonzeroInt() {
-
-		int next;
-
-		// Instead of looping, let's just do a couple of if statements given how rare it
-		// is to pull a zero
-		next = insecure.nextInt();
-		if (next != 0)
-			return next;
-
-		next = insecure.nextInt();
-		if (next != 0)
-			return next;
-
-		next = insecure.nextInt();
-		if (next != 0)
-			return next;
-
-		throw new RuntimeException(
-				"The probability of reaching this statement is 1.262E-29 for any given invocation (assuming the PRNG is uniform)");
-	}
-
 	/**
 	 * Generate a random alphabetic string of given length.
 	 *
@@ -66,6 +44,28 @@ public final class S7SRandom {
 	 */
 	public static <E> E nextItem(E[] array) {
 		return array[insecure.nextInt(0, array.length - 1)];
+	}
+
+	public static int nextNonzeroInt() {
+
+		int next;
+
+		// Instead of looping, let's just do a couple of if statements given how rare it
+		// is to pull a zero
+		next = insecure.nextInt();
+		if (next != 0)
+			return next;
+
+		next = insecure.nextInt();
+		if (next != 0)
+			return next;
+
+		next = insecure.nextInt();
+		if (next != 0)
+			return next;
+
+		throw new RuntimeException(
+				"The probability of reaching this statement is 1.262E-29 for any given invocation (assuming the PRNG is uniform)");
 	}
 
 	/**

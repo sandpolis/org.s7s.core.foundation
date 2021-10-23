@@ -21,6 +21,10 @@ public record S7SDuration(Duration duration) {
 	private static final ChronoUnit[] DEFAULT_DURATION_UNITS = new ChronoUnit[] { ChronoUnit.DAYS, ChronoUnit.HOURS,
 			ChronoUnit.MINUTES, ChronoUnit.SECONDS };
 
+	public static S7SDuration of(Duration duration) {
+		return new S7SDuration(duration);
+	}
+
 	/**
 	 * Format the given time duration in English according to the given units.
 	 *
