@@ -39,6 +39,10 @@ public record S7SFile(Path path) {
 		return new S7SFile(file.toPath());
 	}
 
+	public static S7SFile of(String file) {
+		return new S7SFile(Paths.get(file));
+	}
+
 	/**
 	 * Locate a module's jar file in the given directory.
 	 *
@@ -47,6 +51,7 @@ public record S7SFile(Path path) {
 	 * @return The file containing the desired module
 	 */
 	public Optional<Path> findModule(String module) {
+
 		if (!Files.isDirectory(path))
 			throw new IllegalArgumentException();
 
@@ -63,6 +68,7 @@ public record S7SFile(Path path) {
 	 * @throws IOException
 	 */
 	public void download(URL url) throws IOException {
+
 		if (url == null)
 			throw new IllegalArgumentException();
 
@@ -104,16 +110,17 @@ public record S7SFile(Path path) {
 	 *
 	 * @param placeholder The unique placeholder
 	 * @param replacement The payload buffer
+	 * @return Whether the placeholder was found
 	 * @throws IOException
 	 */
-	public void replace(short[] placeholder, byte[] replacement) throws IOException {
+	public boolean replace(short[] placeholder, byte[] replacement) throws IOException {
 
 		if (!Files.exists(path))
 			throw new FileNotFoundException();
 
 		// Check the replacement buffer size
 		if (replacement.length > placeholder.length)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("The replacement cannot be larger than the placeholder");
 
 		try (var ch = FileChannel.open(path, READ, WRITE)) {
 			var buffer = ch.map(MapMode.READ_WRITE, ch.position(), ch.size()).order(ByteOrder.nativeOrder());
@@ -133,11 +140,11 @@ public record S7SFile(Path path) {
 
 				// Overwrite
 				buffer.put(replacement);
-				return;
+				return true;
 			}
 
 			// Placeholder not found
-			throw new IOException("Failed to find placeholder");
+			return false;
 		}
 	}
 }

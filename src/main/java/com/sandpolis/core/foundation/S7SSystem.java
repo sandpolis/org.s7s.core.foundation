@@ -38,11 +38,11 @@ import com.sandpolis.core.foundation.Platform.OsType;
 
 public final class S7SSystem {
 
-	public static final ArchType ARCH_TYPE = queryArchType();
-
 	private static final Logger log = LoggerFactory.getLogger(S7SSystem.class);
 
 	public static final OsType OS_TYPE = queryOsType();
+
+	public static final ArchType ARCH_TYPE = queryArchType();
 
 	static {
 		log.trace("Determined OS type: {}", OS_TYPE);
