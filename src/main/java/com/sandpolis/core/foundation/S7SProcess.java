@@ -12,17 +12,23 @@ package com.sandpolis.core.foundation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ObjectArrays;
 import com.google.common.io.CharStreams;
 
 public record S7SProcess(Process process) {
 
 	private static final Logger log = LoggerFactory.getLogger(S7SProcess.class);
+
+	public static S7SProcess exec(Path executable, String... cmdLine) {
+		return exec(ObjectArrays.concat(executable.toString(), cmdLine));
+	}
 
 	public static S7SProcess exec(String... cmdLine) {
 		log.trace("Executing system command: \"{}\"", String.join(" ", cmdLine));

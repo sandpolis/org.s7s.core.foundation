@@ -46,7 +46,6 @@ public record S7SFile(Path path) {
 	/**
 	 * Locate a module's jar file in the given directory.
 	 *
-	 * @param directory The directory to search
 	 * @param module    The module name
 	 * @return The file containing the desired module
 	 */
