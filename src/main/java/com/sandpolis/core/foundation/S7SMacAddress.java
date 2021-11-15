@@ -19,9 +19,9 @@ public record S7SMacAddress(String string, byte[] bytes) {
 		checkArgument(bytes.length == 6);
 
 		return new S7SMacAddress(mac,
-				new byte[] { Short.valueOf(bytes[0]).byteValue(), Short.valueOf(bytes[1]).byteValue(),
-						Short.valueOf(bytes[2]).byteValue(), Short.valueOf(bytes[3]).byteValue(),
-						Short.valueOf(bytes[4]).byteValue(), Short.valueOf(bytes[5]).byteValue() });
+				new byte[] { Short.valueOf(bytes[0], 16).byteValue(), Short.valueOf(bytes[1], 16).byteValue(),
+						Short.valueOf(bytes[2], 16).byteValue(), Short.valueOf(bytes[3], 16).byteValue(),
+						Short.valueOf(bytes[4], 16).byteValue(), Short.valueOf(bytes[5], 16).byteValue() });
 	}
 
 	public static S7SMacAddress of(byte[] mac) {
