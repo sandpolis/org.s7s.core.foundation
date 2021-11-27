@@ -41,6 +41,17 @@ public record S7SMavenArtifact(String groupId, String artifactId, String version
 
 	private static final String MAVEN_CENTRAL_URL = "https://repo1.maven.org/maven2";
 
+	public static S7SMavenArtifact of(String group, String artifact, String version, String classifier) {
+		if (classifier == null) {
+			return of(group, artifact, version);
+		}
+		return of(group + ":" + artifact + ":" + version + ":" + classifier);
+	}
+
+	public static S7SMavenArtifact of(String group, String artifact, String version) {
+		return of(group + ":" + artifact + ":" + version);
+	}
+
 	public static S7SMavenArtifact of(String coordinates) {
 		checkNotNull(coordinates);
 		checkArgument(!coordinates.isBlank());
