@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public record S7STCPService(int port) {
+public record S7STcpService(int port) {
 
-	public static S7STCPService of(int port) {
+	public static S7STcpService of(int port) {
 		if (port < 0 || port >= 65536)
 			throw new IllegalArgumentException("Invalid port: " + port);
 
-		return new S7STCPService(port);
+		return new S7STcpService(port);
 	}
 
 	/**

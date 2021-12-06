@@ -19,30 +19,31 @@ import java.net.ServerSocket;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class S7STCPServiceTest {
+class S7STcpServiceTest {
 
 	@Test
 	@DisplayName("Check some open ports")
 	void checkOpenPorts() throws IOException {
 
 		try (ServerSocket socket = new ServerSocket(8923)) {
-			assertTrue(S7STCPService.of(8923).checkPort("localhost"));
+			assertTrue(S7STcpService.of(8923).checkPort("localhost"));
 		}
 
-		assertFalse(S7STCPService.of(8923).checkPort("localhost"));
+		assertFalse(S7STcpService.of(8923).checkPort("localhost"));
 	}
 
 	@Test
 	@DisplayName("Check some closed ports")
 	void checkClosedPorts() throws IOException {
-		assertFalse(S7STCPService.of(8923).checkPort("localhost"));
+		assertFalse(S7STcpService.of(8923).checkPort("localhost"));
 	}
 
 	@Test
 	@DisplayName("Check well-known service names")
 	void getServiceName() {
-		assertEquals("ssh", S7STCPService.of(22).serviceName().get());
-		assertEquals("sandpolis", S7STCPService.of(8768).serviceName().get());
+		assertEquals("ftp", S7STcpService.of(21).serviceName().get());
+		assertEquals("ssh", S7STcpService.of(22).serviceName().get());
+		assertEquals("http", S7STcpService.of(80).serviceName().get());
 	}
 
 }
