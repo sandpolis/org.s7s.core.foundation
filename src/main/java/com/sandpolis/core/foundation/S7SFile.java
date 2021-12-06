@@ -44,6 +44,40 @@ public record S7SFile(Path path) {
 	}
 
 	/**
+	 * Attempt to locate an executable on the PATH.
+	 * 
+	 * @param executable The name to find
+	 * @return The executable if found
+	 */
+	public static Optional<S7SFile> which(String executable) {
+
+		// Search PATH environment variable or default
+		switch (S7SSystem.OS_TYPE) {
+		case MACOS:
+		case LINUX:
+			for (var path : S7SEnvironmentVariable.of("PATH").value().orElse("/usr/bin:/bin:/usr/sbin:/usr/local/bin")
+					.split(":")) {
+				if (Files.isExecutable(Paths.get(path).resolve(executable))) {
+					return Optional.of(S7SFile.of(Paths.get(path).resolve(executable)));
+				}
+			}
+			break;
+		case WINDOWS:
+			for (var path : S7SEnvironmentVariable.of("PATH").value().orElse("C:\\Windows\\system32;C:\\Windows")
+					.split(";")) {
+				if (Files.isExecutable(Paths.get(path).resolve(executable))) {
+					return Optional.of(S7SFile.of(Paths.get(path).resolve(executable)));
+				}
+			}
+			break;
+		default:
+			break;
+		}
+
+		return Optional.empty();
+	}
+
+	/**
 	 * Locate a module's jar file in the given directory.
 	 *
 	 * @param module The module name
@@ -64,9 +98,22 @@ public record S7SFile(Path path) {
 	 *
 	 * @param url  The resource location
 	 * @param file The output file
+	 * @return this
 	 * @throws IOException
 	 */
-	public void download(URL url) throws IOException {
+	public S7SFile download(String url) throws IOException {
+		return download(new URL(url));
+	}
+
+	/**
+	 * Download a file from the Internet to a local file.
+	 *
+	 * @param url  The resource location
+	 * @param file The output file
+	 * @return this
+	 * @throws IOException
+	 */
+	public S7SFile download(URL url) throws IOException {
 
 		if (url == null)
 			throw new IllegalArgumentException();
@@ -78,6 +125,8 @@ public record S7SFile(Path path) {
 				in.transferTo(out);
 			}
 		}
+
+		return this;
 	}
 
 	/**
@@ -85,21 +134,31 @@ public record S7SFile(Path path) {
 	 * bytes will be written to the file's original physical location, so this
 	 * method should not be used for secure applications.
 	 *
+	 * @return this
 	 * @throws IOException
 	 */
-	public void overwrite() throws IOException {
+	public S7SFile overwrite() throws IOException {
 
 		if (!Files.exists(path))
 			throw new FileNotFoundException();
 
 		byte[] zeros = new byte[4096];
 
-		try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "w")) {
-			for (long i = 0; i < raf.length(); i += zeros.length)
+		try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "rws")) {
+			if (raf.length() < zeros.length) {
+				raf.write(new byte[(int) raf.length()]);
+				return this;
+			}
+
+			for (long i = 0; i < raf.length(); i += zeros.length) {
 				raf.write(zeros);
-			for (long i = 0; i < raf.length() % zeros.length; i++)
+			}
+			for (long i = 0; i < raf.length() % zeros.length; i++) {
 				raf.writeByte(0);
+			}
 		}
+
+		return this;
 	}
 
 	/**
@@ -109,10 +168,10 @@ public record S7SFile(Path path) {
 	 *
 	 * @param placeholder The unique placeholder
 	 * @param replacement The payload buffer
-	 * @return Whether the placeholder was found
+	 * @return this
 	 * @throws IOException
 	 */
-	public boolean replace(short[] placeholder, byte[] replacement) throws IOException {
+	public S7SFile replace(short[] placeholder, byte[] replacement) throws IOException {
 
 		if (!Files.exists(path))
 			throw new FileNotFoundException();
@@ -139,11 +198,11 @@ public record S7SFile(Path path) {
 
 				// Overwrite
 				buffer.put(replacement);
-				return true;
+				return this;
 			}
 
 			// Placeholder not found
-			return false;
+			return this;
 		}
 	}
 }
