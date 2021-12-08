@@ -13,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -26,6 +25,10 @@ public record S7SProcess(Process process) {
 
 	private static final Logger log = LoggerFactory.getLogger(S7SProcess.class);
 
+	public static interface CompletionHandler {
+		public void complete(int exit, String stdout, String stderr);
+	}
+
 	public static S7SProcess exec(Path executable, String... cmdLine) {
 		return exec(ObjectArrays.concat(executable.toString(), cmdLine));
 	}
@@ -36,8 +39,7 @@ public record S7SProcess(Process process) {
 		try {
 			return new S7SProcess(Runtime.getRuntime().exec(cmdLine));
 		} catch (IOException e) {
-			// A failed process
-			return new S7SProcess(null);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -46,15 +48,23 @@ public record S7SProcess(Process process) {
 		return exec("sh", "-c", command);
 	}
 
-	public Stream<String> lines() {
+	public Stream<String> stdoutLines() {
 		return new BufferedReader(new InputStreamReader(process.getInputStream())).lines();
 	}
 
-	public Optional<String> string() {
+	public String stdout() {
 		try {
-			return Optional.of(CharStreams.toString(new InputStreamReader(process.getInputStream())));
+			return CharStreams.toString(new InputStreamReader(process.getInputStream()));
 		} catch (IOException e) {
-			return Optional.empty();
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String stderr() {
+		try {
+			return CharStreams.toString(new InputStreamReader(process.getErrorStream()));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -64,6 +74,18 @@ public record S7SProcess(Process process) {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void complete(CompletionHandler handler) {
+		int exit = exitValue();
+		handler.complete(exit, stdout(), stderr());
+	}
+
+	public void onComplete(CompletionHandler handler) {
+		// Simple, but slow
+		new Thread(() -> {
+			complete(handler);
+		}).start();
 	}
 
 }

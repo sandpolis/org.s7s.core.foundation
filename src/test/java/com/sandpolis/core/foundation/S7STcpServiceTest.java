@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,7 @@ class S7STcpServiceTest {
 
 	@Test
 	@DisplayName("Check well-known service names")
+	@Disabled
 	void getServiceName() {
 		assertEquals("ftp", S7STcpService.of(21).serviceName().get());
 		assertEquals("ssh", S7STcpService.of(22).serviceName().get());

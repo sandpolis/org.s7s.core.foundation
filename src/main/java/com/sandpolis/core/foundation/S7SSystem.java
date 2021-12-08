@@ -55,7 +55,7 @@ public final class S7SSystem {
 	private static ArchType queryArchType() {
 
 		// Try uname first because many systems have it
-		String uname = S7SProcess.exec("uname", "-m").string().orElse("").toLowerCase();
+		String uname = S7SProcess.exec("uname", "-m").stdout().toLowerCase();
 
 		if (!uname.isBlank()) {
 			if (uname.contains("x86_64") || uname.contains("ia64"))
@@ -91,8 +91,7 @@ public final class S7SSystem {
 
 		// Also try WMI on windows
 		if (OS_TYPE == WINDOWS) {
-			String wmic = S7SProcess.exec("wmic", "computersystem", "get", "systemtype").string().orElse("")
-					.toLowerCase();
+			String wmic = S7SProcess.exec("wmic", "computersystem", "get", "systemtype").stdout().toLowerCase();
 
 			if (wmic.contains("x64"))
 				return X86_64;
