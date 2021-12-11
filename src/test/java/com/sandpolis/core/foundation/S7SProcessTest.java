@@ -19,8 +19,8 @@ import com.sandpolis.core.foundation.Platform.OsType;
 class S7SProcessTest {
 
 	@Test
-	void testCompleteLinux() {
-		assumeTrue(S7SSystem.OS_TYPE == OsType.LINUX);
+	void testCompleteUnix() {
+		assumeTrue(S7SSystem.OS_TYPE != OsType.WINDOWS);
 
 		S7SProcess.exec("true").complete((exit, stdout, stderr) -> {
 			assertEquals(0, exit);
@@ -39,6 +39,13 @@ class S7SProcessTest {
 			assertEquals("true\n", stdout);
 			assertEquals("", stderr);
 		});
+	}
+
+	@Test
+	void testCompleteWindows() {
+		assumeTrue(S7SSystem.OS_TYPE == OsType.WINDOWS);
+
+		// TODO
 	}
 
 }
