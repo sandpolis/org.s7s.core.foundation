@@ -11,7 +11,7 @@ package com.sandpolis.core.foundation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 public record S7SString(String text) {
@@ -174,7 +174,7 @@ public record S7SString(String text) {
 	 */
 	public boolean isPath() {
 		try {
-			new File(text).getCanonicalPath();
+			Paths.get(text);
 			return true;
 		} catch (Throwable e) {
 			return false;
