@@ -40,8 +40,8 @@ class S7SFileTest {
 	@Test
 	void testWhichWindows() {
 		assumeTrue(S7SSystem.OS_TYPE == OsType.WINDOWS);
-		assertTrue(S7SFile.which("dir").isPresent());
-		assertFalse(S7SFile.which("dir123").isPresent());
+		assertTrue(S7SFile.which("explorer.exe").isPresent());
+		assertFalse(S7SFile.which("123456").isPresent());
 	}
 
 	@Test

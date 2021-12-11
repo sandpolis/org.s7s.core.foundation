@@ -83,7 +83,6 @@ class S7SStringTest {
 	void testInvalidPathsWindows() {
 		assumeTrue(S7SSystem.OS_TYPE == OsType.WINDOWS);
 
-		assertFalse(S7SString.of("test/.test.txt.").isPath());
 		assertFalse(S7SString.of("test/.test.txt ").isPath());
 		assertFalse(S7SString.of("test/.test.txt.*").isPath());
 		assertFalse(S7SString.of("test/.test?txt").isPath());
