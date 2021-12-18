@@ -42,6 +42,10 @@ public record S7SProcess(Process process) {
 		private ProcessException(IOException e) {
 			super(e);
 		}
+
+		private ProcessException(String message) {
+			super(message);
+		}
 	}
 
 	/**
@@ -64,13 +68,59 @@ public record S7SProcess(Process process) {
 	public static S7SProcess exec(String... cmdLine) {
 
 		if (log.isTraceEnabled())
-			log.trace("Executing system command: \"{}\"", String.join(" ", cmdLine));
+			log.trace("Starting new process: \"{}\"", String.join(" ", cmdLine));
 
 		try {
 			return new S7SProcess(Runtime.getRuntime().exec(cmdLine));
 		} catch (IOException e) {
 			throw new ProcessException(e);
 		}
+	}
+
+	/**
+	 * Start a new process as a superuser. If the current user is not the superuser,
+	 * then the platform specific "run as" mechanism will be invoked (not
+	 * necessarily "sudo").
+	 * 
+	 * @param cmdLine The process executable and arguments
+	 * @return A new {@link S7SProcess}
+	 */
+	public static S7SProcess sudo(String... cmdLine) {
+
+		switch (S7SSystem.OS_TYPE) {
+		case FREEBSD:
+		case MACOS:
+		case LINUX:
+
+			if (System.getProperty("user.name").equals("root")) {
+				return exec(cmdLine);
+			}
+
+			var sudo = S7SFile.which("sudo");
+			if (sudo.isPresent()) {
+				log.trace("Using 'sudo' mechanism");
+				return exec(sudo.get().path(), ObjectArrays.concat("-n", cmdLine));
+			}
+
+			break;
+		case WINDOWS:
+
+			// Check if we're admin
+			if (exec("net", "user", System.getProperty("user.name")).stdout().contains("*Administrators")) {
+				return exec(cmdLine);
+			}
+
+			var runas = S7SFile.which("runas.exe");
+			if (runas.isPresent()) {
+				log.trace("Using 'runas' mechanism");
+				return exec(runas.get().path(), ObjectArrays.concat("/user:administrator", cmdLine));
+			}
+			break;
+		default:
+			break;
+		}
+
+		throw new ProcessException("Failed to find 'run as' mechanism");
 	}
 
 	public Stream<String> stdoutLines() {

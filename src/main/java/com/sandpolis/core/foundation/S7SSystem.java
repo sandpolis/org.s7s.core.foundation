@@ -58,6 +58,8 @@ public final class S7SSystem {
 		String uname = S7SProcess.exec("uname", "-m").stdout().toLowerCase();
 
 		if (!uname.isBlank()) {
+			log.trace("Parsing uname: '{}'", uname);
+
 			if (uname.contains("x86_64") || uname.contains("ia64"))
 				return X86_64;
 
@@ -93,11 +95,15 @@ public final class S7SSystem {
 		if (OS_TYPE == WINDOWS) {
 			String wmic = S7SProcess.exec("wmic", "computersystem", "get", "systemtype").stdout().toLowerCase();
 
-			if (wmic.contains("x64"))
-				return X86_64;
+			if (!wmic.isBlank()) {
+				log.trace("Parsing wmic: '{}'", wmic);
 
-			if (wmic.contains("x86"))
-				return X86;
+				if (wmic.contains("x64"))
+					return X86_64;
+
+				if (wmic.contains("x86"))
+					return X86;
+			}
 		}
 
 		return UNKNOWN_ARCH;

@@ -27,9 +27,14 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.zip.ZipFile;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.io.Resources;
 
 public record S7SJarFile(Path file) {
+
+	private static final Logger log = LoggerFactory.getLogger(S7SJarFile.class);
 
 	public static S7SJarFile of(Path file) {
 		return new S7SJarFile(file);
@@ -82,14 +87,14 @@ public record S7SJarFile(Path file) {
 	}
 
 	/**
-	 * Read the given resource from the given zip.
+	 * Read the given resource if available.
 	 *
 	 * @param resource The resource path
 	 * @param parser   The parsing function
 	 * @return The parsed object
 	 * @throws IOException
 	 */
-	public <T> Optional<T> getResource(String resource, ResourceParser<T> parser) throws IOException, Exception {
+	public <T> Optional<T> getResource(String resource, ResourceParser<T> parser) throws IOException {
 		checkNotNull(resource);
 		checkNotNull(parser);
 
@@ -99,16 +104,37 @@ public record S7SJarFile(Path file) {
 		// Attempt to use the newer filesystem API first
 		try (FileSystem zip = FileSystems.newFileSystem(file, (ClassLoader) null)) {
 			try (var in = Files.newInputStream(zip.getPath(resource))) {
-				return Optional.ofNullable(parser.parse(in));
+				try {
+					return Optional.ofNullable(parser.parse(in));
+				} catch (Exception e) {
+					log.error("Failed to parse resource", e);
+					return Optional.empty();
+				}
 			}
 		} catch (ProviderNotFoundException e) {
 			// ZipFile fallback
 			try (ZipFile zip = new ZipFile(file.toFile())) {
 				try (var in = zip.getInputStream(zip.getEntry(resource))) {
-					return Optional.ofNullable(parser.parse(in));
+					try {
+						return Optional.ofNullable(parser.parse(in));
+					} catch (Exception e1) {
+						log.error("Failed to parse resource", e1);
+						return Optional.empty();
+					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Read the given resource if available.
+	 *
+	 * @param resource The resource path
+	 * @return The resource bytes
+	 * @throws IOException
+	 */
+	public Optional<byte[]> getResource(String resource) throws IOException {
+		return getResource(resource, in -> in.readAllBytes());
 	}
 
 	/**
