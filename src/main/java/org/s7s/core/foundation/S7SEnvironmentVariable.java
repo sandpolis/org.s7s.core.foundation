@@ -6,16 +6,27 @@
 //  version 2. You may not use this file except in compliance with the MPLv2. //
 //                                                                            //
 //============================================================================//
+package org.s7s.core.foundation;
 
-rootProject.name = "org.s7s.core.foundation"
+import java.util.Optional;
 
-buildscript {
-	repositories {
-		maven {
-			url = uri("https://plugins.gradle.org/m2/")
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public record S7SEnvironmentVariable(String name, Optional<String> value) {
+
+	private static final Logger log = LoggerFactory.getLogger(S7SEnvironmentVariable.class);
+
+	public S7SEnvironmentVariable(String name, Optional<String> value) {
+		this.name = name;
+		this.value = value;
+
+		if (value.isPresent()) {
+			log.trace("Loaded environment variable: {} -> \"{}\"", name, value.get());
 		}
 	}
-	dependencies {
-		classpath("org.s7s:org.s7s.build:+")
+
+	public static S7SEnvironmentVariable of(String name) {
+		return new S7SEnvironmentVariable(name, Optional.ofNullable(System.getenv().get(name)));
 	}
 }
